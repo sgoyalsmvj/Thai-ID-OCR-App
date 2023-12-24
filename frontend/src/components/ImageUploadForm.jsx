@@ -13,23 +13,20 @@ const ImageUploadForm = () => {
     if (!selectedImage) {
       alert("Please select an image");
     }
-    try {
-      const formData = new FormData();
-      formData.append("file", selectedImage);
-      const response = await axios.post("/api/uploadImage", formData, {
+    const formData = new FormData();
+    formData.append("file", selectedImage);
+    await axios
+      .post("/api/uploadImage", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
       });
-      if (response.status === 200) {
-        alert("File uploaded successfully!");
-        // You can reset the form or perform other actions after successful upload
-      } else {
-        alert("File upload failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
   };
   return (
     <div>
