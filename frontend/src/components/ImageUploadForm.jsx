@@ -41,7 +41,7 @@ const ImageUploadForm = () => {
           <img
             alt="uploaded image"
             src={URL.createObjectURL(selectedImage)}
-            style={{ maxWidth: "50%", maxHeight: "200px" }}
+            style={{ maxWidth: "100%", }}
           />
         ) : (
           <p>Select an image</p>
