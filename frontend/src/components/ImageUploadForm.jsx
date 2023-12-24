@@ -29,11 +29,20 @@ const ImageUploadForm = () => {
       });
   };
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column" }}>
       <h1>Upload ID card</h1>
-      <form action="/api/uploadImage" method="post" onSubmit={handleSubmit}>
+      <form
+        style={{ display: "flex", flexDirection: "column" }}
+        action="/api/uploadImage"
+        method="post"
+        onSubmit={handleSubmit}
+      >
         {selectedImage ? (
-          <img alt="uploaded image" src={URL.createObjectURL(selectedImage)} />
+          <img
+            alt="uploaded image"
+            src={URL.createObjectURL(selectedImage)}
+            style={{ maxWidth: "50%", maxHeight: "200px" }}
+          />
         ) : (
           <p>Select an image</p>
         )}
