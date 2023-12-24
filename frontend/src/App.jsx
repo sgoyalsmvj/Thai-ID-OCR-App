@@ -1,5 +1,6 @@
 
 import './App.css'
+import ImageUploadForm from './components/ImageUploadForm'
 
 function App() {
   
