@@ -8,7 +8,7 @@ const detectText = async (file_path,CONFIG) => {
     console.log(detected);
     const structuredData = structureOCRData(detected);
     console.log(structuredData);
-    return result;
+    return structuredData;
   } catch (error) {
     console.error("Error detecting text:", error);
     throw error; 
