@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+// frontend/src/components/ImageUploadForm.js
+
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Card from "./Card"; // Import the Card component
+
+import Field from "./Field";
+import Card from "./Card";
 
 const ImageUploadForm = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
+  const [cards, setCards] = useState([]);
+  const [showCardList, setShowCardList] = useState(false);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -34,33 +40,71 @@ const ImageUploadForm = () => {
       });
 
       setResult(response.data);
+      // After successful image upload, fetch and update the cards list
+      fetchCards();
     } catch (error) {
       console.error("Error uploading image:", error.message);
-      setError("An error occurred while processing the image. Please try again.");
+      setError(
+        "An error occurred while processing the image. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/api/cards/${id}`);
+      // After successful deletion, fetch and update the cards list
+      fetchCards();
+    } catch (error) {
+      console.error("Error deleting card:", error.message);
+      setError("An error occurred while deleting the card. Please try again.");
+    }
+  };
+
+  const fetchCards = async () => {
+    try {
+      const response = await axios.get("/api/cards");
+      setCards(response.data);
+    } catch (error) {
+      console.error("Error fetching cards:", error.message);
+      setError("An error occurred while fetching cards. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    // Fetch initial cards data when the component mounts
+    fetchCards();
+  }, []);
+
   return (
-    <>
-    
-       <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-      
-      <div style={{ marginRight: "20px" }}>
-        
-        <form
-          style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-          action="/api/uploadImage"
-          method="post"
-          onSubmit={handleSubmit}
-        >
+    <div
+      style={{ display: "flex", flexDirection: "column", alignItems: "center" ,placeItems:'center' }}
+    >
+      <h2>Upload ID Card</h2>
+      <div style={{display:"flex",}}>
+      <form
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          
+          
+        }}
+        action="/api/uploadImage"
+        method="post"
+        onSubmit={handleSubmit}
+      >
+        <div>
           {selectedImage ? (
-            <img
-              alt="uploaded image"
-              src={URL.createObjectURL(selectedImage)}
-              style={{ maxWidth: "75%" }}
-            />
+            <div style={{ width: "400px",}}>
+              <img
+                alt="uploaded image"
+                src={URL.createObjectURL(selectedImage)}
+                style={{ maxWidth: "70%", margin:'40px 0 10px 10px'}}
+              />
+            </div>
           ) : (
             <p>Select an image</p>
           )}
@@ -69,12 +113,46 @@ const ImageUploadForm = () => {
             {loading ? "Uploading..." : "Upload"}
           </button>
           {error && <p style={{ color: "red" }}>{error}</p>}
-        </form>
+        </div>
+        
+      </form>
+      <div>
+          {result && (
+            <div
+              style={{ marginTop: "16px", textAlign: "left", width: "100%" }}
+            >
+              <h2>Results:</h2>
+              <Field label="Name" value={result.name} />
+              <Field label="Last Name" value={result.lastName} />
+              <Field label="Date of Birth" value={result.dateOfBirth} />
+              <Field
+                label="Identification Number"
+                value={result.identificationNumber}
+              />
+              <Field label="Date of Issue" value={result.dateOfIssue} />
+              <Field label="Date of Expiry" value={result.dateOfExpiry} />
+            </div>
+          )}
+        </div>
       </div>
-      {result && <Card data={result} />}
+
+      <div style={{ marginTop: "32px" }}>
+        <button onClick={() => setShowCardList(!showCardList)}>
+          {showCardList ? "Hide Card List" : "Show Card List"}
+        </button>
+        {showCardList && (
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
+            {cards.map((card) => (
+              <Card
+                key={card.identificationNumber}
+                card={card}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
-    </>
- 
   );
 };
 

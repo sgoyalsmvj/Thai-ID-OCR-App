@@ -1,3 +1,6 @@
+
+// necessary imports and dependencies
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -5,8 +8,19 @@ const multer = require("multer");
 const path = require("path");
 require("dotenv").config();
 const detectText = require("./utils/ocrUtils");
+const Card = require("./models/Card");
 
-// Parse Google Cloud credentials from environment variable
+// Connecting to DB
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("connected to db!");
+  });
+
+// Parse Google Cloud credentials from the environment variable
 let credentials;
 try {
   credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
@@ -60,10 +74,68 @@ app.post("/api/uploadImage", upload.single("file"), async (req, res) => {
     const uploadedFile = req.file;
     const result = await detectText(uploadedFile.path, CONFIG);
 
+    // Store in DB.
+    const cardData = new Card(result);
+    await cardData.save();
+
     // Respond with the detected text
     res.json(result);
   } catch (error) {
     console.error("Error detecting text:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Fetch all cards
+app.get("/api/cards", async (req, res) => {
+  try {
+    const cards = await Card.find();
+    res.json(cards);
+  } catch (error) {
+    console.error("Error getting cards:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Fetch a single card by ID
+app.get("/api/cards/:id", async (req, res) => {
+  try {
+    const card = await Card.findOne({ identificationNumber: req.params.id });
+    if (!card) {
+      return res.status(404).json({ error: "Card not found" });
+    }
+    res.json(card);
+  } catch (error) {
+    console.error("Error getting card:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Create a new card
+app.post("/api/cards", async (req, res) => {
+  try {
+    const newCard = new Card(req.body);
+    await newCard.save();
+    res.json(newCard);
+  } catch (error) {
+    console.error("Error creating card:", error);
+    if (error.code === 11000) {
+      return res.status(400).json({ error: "Card with this identification number already exists" });
+    }
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Delete a card by ID
+app.delete("/api/cards/:id", async (req, res) => {
+  try {
+    const deletedCard = await Card.findOneAndDelete({ identificationNumber: req.params.id });
+    if (!deletedCard) {
+      return res.status(404).json({ error: "Card not found" });
+    }
+    res.json(deletedCard);
+  } catch (error) {
+    console.error("Error deleting card:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
