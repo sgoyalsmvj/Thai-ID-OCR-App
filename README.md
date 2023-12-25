@@ -125,5 +125,5 @@ Before running the application, ensure you have the following:
     "date-of-expiry": "05/02/2026"
 }
 ```
-(![Alt text](image.png))
-![Alt text](image-1.png)
+(![image-1](image.png))
+![image-2](image-1.png)
