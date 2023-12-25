@@ -106,7 +106,7 @@ const ImageUploadForm = () => {
     >
       <div style={{border:"1px solid white", padding:'10px'}}>
       <h2>Upload ID Card</h2>
-      <div style={{display:"flex", margin:'20px'}}>
+      <div style={{display:"flex", marginBottom:''}}>
         <form
           style={{
             display: "flex",

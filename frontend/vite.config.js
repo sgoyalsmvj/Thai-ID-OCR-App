@@ -6,7 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server:{
     proxy:{
-      '/api' : 'https://thai-id-ocr-app-production.up.railway.app',
+      "/api": {
+        "target": "https://thai-id-ocr-app-production.up.railway.app",
+        "secure": false
+      }
     }
   }
 })

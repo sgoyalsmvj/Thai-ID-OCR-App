@@ -11,6 +11,7 @@ const detectText = require("./utils/ocrUtils");
 const Card = require("./models/Card");
 
 // Connecting to DB
+
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
