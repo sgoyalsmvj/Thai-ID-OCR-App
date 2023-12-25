@@ -143,6 +143,35 @@ app.delete("/api/cards/:id", async (req, res) => {
   }
 });
 
+// Update a card by ID
+app.put("/api/cards/:id", async (req, res) => {
+  try {
+    const updatedCard = await Card.findOneAndUpdate(
+      { identificationNumber: req.params.id },
+      req.body,
+      { new: true }
+    );
+    if (!updatedCard) {
+      return res.status(404).json({ error: "Card not found" });
+    }
+    res.json(updatedCard);
+  } catch (error) {
+    console.error("Error updating card:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Handle undefined routes
+app.use((req, res) => {
+  res.status(404).json({ error: "Not Found" });
+});
+
+// Handle errors
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Internal server error" });
+});
+
 // Start the server on the specified port
 app.listen(PORT, () => {
   console.log(`Server is listening at port ${PORT}`);

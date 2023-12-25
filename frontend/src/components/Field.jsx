@@ -1,5 +1,4 @@
-
-
+// frontend/src/components/Field.js
 import React from "react";
 
 const Field = ({ label, value }) => (

@@ -1,10 +1,9 @@
 // frontend/src/components/ImageUploadForm.js
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
 import Field from "./Field";
 import Card from "./Card";
+import EditCardModal from "./EditCardModal";
 
 const ImageUploadForm = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -12,6 +11,8 @@ const ImageUploadForm = () => {
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
   const [cards, setCards] = useState([]);
+  const [editingCard, setEditingCard] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showCardList, setShowCardList] = useState(false);
 
   const handleFileChange = (event) => {
@@ -52,6 +53,27 @@ const ImageUploadForm = () => {
     }
   };
 
+  const handleEdit = (card) => {
+    setEditingCard(card);
+    setShowEditModal(true);
+  };
+
+  const handleUpdate = async (updatedData) => {
+    try {
+      const response = await axios.put(
+        `/api/cards/${editingCard.identificationNumber}`,
+        updatedData
+      );
+      setEditingCard(null);
+      setShowEditModal(false);
+      // After successful update, fetch and update the cards list
+      fetchCards();
+    } catch (error) {
+      console.error("Error updating card:", error.message);
+      setError("An error occurred while updating the card. Please try again.");
+    }
+  };
+
   const handleDelete = async (id) => {
     try {
       await axios.delete(`/api/cards/${id}`);
@@ -80,43 +102,42 @@ const ImageUploadForm = () => {
 
   return (
     <div
-      style={{ display: "flex", flexDirection: "column", alignItems: "center" ,placeItems:'center' }}
+      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
+      <div style={{border:"1px solid white", padding:'10px'}}>
       <h2>Upload ID Card</h2>
-      <div style={{display:"flex",}}>
-      <form
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          
-          
-        }}
-        action="/api/uploadImage"
-        method="post"
-        onSubmit={handleSubmit}
-      >
+      <div style={{display:"flex", margin:'20px'}}>
+        <form
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+          action="/api/uploadImage"
+          method="post"
+          onSubmit={handleSubmit}
+        >
+          <div>
+            {selectedImage ? (
+              <div style={{ width: "400px" }}>
+                <img
+                  alt="uploaded image"
+                  src={URL.createObjectURL(selectedImage)}
+                  style={{ maxWidth: "70%", margin: "40px 0 10px 10px" }}
+                />
+              </div>
+            ) : (
+              <p>Select an image</p>
+            )}
+            <input type="file" onChange={handleFileChange} />
+            <button type="submit" disabled={loading}>
+              {loading ? "Uploading..." : "Upload"}
+            </button>
+            {error && <p style={{ color: "red" }}>{error}</p>}
+          </div>
+        </form>
+
         <div>
-          {selectedImage ? (
-            <div style={{ width: "400px",}}>
-              <img
-                alt="uploaded image"
-                src={URL.createObjectURL(selectedImage)}
-                style={{ maxWidth: "70%", margin:'40px 0 10px 10px'}}
-              />
-            </div>
-          ) : (
-            <p>Select an image</p>
-          )}
-          <input type="file" onChange={handleFileChange} />
-          <button type="submit" disabled={loading}>
-            {loading ? "Uploading..." : "Upload"}
-          </button>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-        </div>
-        
-      </form>
-      <div>
           {result && (
             <div
               style={{ marginTop: "16px", textAlign: "left", width: "100%" }}
@@ -135,8 +156,11 @@ const ImageUploadForm = () => {
           )}
         </div>
       </div>
+      </div>
+      
+      
 
-      <div style={{ marginTop: "32px" }}>
+      <div style={{ marginTop: "32px", }}>
         <button onClick={() => setShowCardList(!showCardList)}>
           {showCardList ? "Hide Card List" : "Show Card List"}
         </button>
@@ -146,12 +170,24 @@ const ImageUploadForm = () => {
               <Card
                 key={card.identificationNumber}
                 card={card}
+                onEdit={handleEdit}
                 onDelete={handleDelete}
               />
             ))}
           </div>
         )}
       </div>
+
+      {showEditModal && (
+        <EditCardModal
+          card={editingCard}
+          onUpdate={handleUpdate}
+          onClose={() => {
+            setEditingCard(null);
+            setShowEditModal(false);
+          }}
+        />
+      )}
     </div>
   );
 };
