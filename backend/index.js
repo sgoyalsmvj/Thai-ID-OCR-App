@@ -62,6 +62,9 @@ const upload = multer({ storage: storage });
 // Define the port from the environment variable or use a default value (e.g., 3000)
 const PORT = process.env.PORT || 3000;
 
+app.get('/',(req,res)=>{
+  res.send('its working!')
+})
 // Endpoint to handle image uploads and text detection
 app.post("/api/uploadImage", upload.single("file"), async (req, res) => {
   try {
