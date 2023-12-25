@@ -125,5 +125,6 @@ Before running the application, ensure you have the following:
     "date-of-expiry": "05/02/2026"
 }
 ```
-(![image-1](./image.png))
-![image-2](./image-1.png)
+![image](https://github.com/sgoyalsmvj/Thai-ID-OCR-App/assets/79046922/83869360-a51d-427b-b33d-6f722b710951)
+![image](https://github.com/sgoyalsmvj/Thai-ID-OCR-App/assets/79046922/1df2e923-fc75-44b4-87d7-f30a6dd61ee6)
+
