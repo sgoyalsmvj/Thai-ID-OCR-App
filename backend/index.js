@@ -9,8 +9,9 @@ const path = require("path");
 require("dotenv").config();
 const detectText = require("./utils/ocrUtils");
 const Card = require("./models/Card");
-
+const cors =require('cors');
 // Connecting to DB
+app.use(cors());
 
 mongoose
   .connect(process.env.MONGODB_URI, {
