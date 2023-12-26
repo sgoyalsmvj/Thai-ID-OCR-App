@@ -2,7 +2,7 @@
 import './App.css'
 import ImageUploadForm from './components/ImageUploadForm'
 import axios from 'axios';
-axios.defaults.baseURL = "https://thai-id-ocr-app-production.up.railway.app";
+axios.defaults.baseURL = "https://thai-id-ocr-app-production.up.railway.app/";
 axios.defaults.withCredentials = true;
 function App() {
   return (
