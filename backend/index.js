@@ -13,7 +13,7 @@ const cors =require('cors');
 // Connecting to DB
 // const cors = require('cors');
 const corsOptions ={
-    origin:'http://localhost:5173', 
+    origin:'https://658a8437215c8c6cd96c9cc5--cool-gelato-ec785c.netlify.app/', 
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
 }
