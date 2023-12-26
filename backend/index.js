@@ -13,7 +13,7 @@ const cors =require('cors');
 // Connecting to DB
 // const cors = require('cors');
 const corsOptions ={
-    origin:'https://main--courageous-kheer-19e174.netlify.app', 
+    origin:'https://courageous-kheer-19e174.netlify.app', 
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
 }
